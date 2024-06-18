@@ -5,6 +5,7 @@ import Navbar from "./components/navbar";
 import { motion } from "framer-motion";
 import React from "react";
 import ImagesSliderParent from "./components/images-slider-parent"
+import UploadAndDisplayImage from "./components/upload-and-display-image";
 
 export default function Home() {
  
@@ -24,6 +25,7 @@ export default function Home() {
               identify now!
             </button>
             <p>Buy now, pay later with Affirm</p>
+
             <div className="flex space-x-2">
               {/* Example user avatars */}
 
@@ -32,6 +34,7 @@ export default function Home() {
               </div>
             </div>
             <p>234,556 users feeding birds with Bird Buddy</p>
+            <UploadAndDisplayImage />
           </div>
           <div className="md:w-1/2 flex justify-center relative mt-8 md:mt-0">
             
