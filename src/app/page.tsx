@@ -5,7 +5,7 @@ import Navbar from "./components/navbar";
 import { motion } from "framer-motion";
 import React from "react";
 import ImagesSliderParent from "./components/images-slider-parent"
-import UploadAndDisplayImage from "./components/upload-and-display-image";
+import UploadAndDisplayImage from "./components/image-upload";
 
 export default function Home() {
  
