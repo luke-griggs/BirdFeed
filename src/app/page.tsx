@@ -1,15 +1,23 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Navbar from "./components/navbar";
 import { motion } from "framer-motion";
 import React from "react";
-import ImagesSliderParent from "./components/images-slider-parent"
+import ImagesSliderParent from "./components/images-slider-parent";
 import UploadAndDisplayImage from "./components/image-upload";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
- 
-
+  const { data: session } = useSession();
+  if (session) {
+    return (
+      <>
+        Signed in as {session.user?.email} <br />
+        <button onClick={() => signOut()}>Sign out</button>
+      </>
+    );
+  }
   return (
     <main>
       <Navbar />
@@ -37,9 +45,7 @@ export default function Home() {
             <UploadAndDisplayImage />
           </div>
           <div className="md:w-1/2 flex justify-center relative mt-8 md:mt-0">
-            
-          <ImagesSliderParent />
-
+            <ImagesSliderParent />
           </div>
         </main>
       </div>
