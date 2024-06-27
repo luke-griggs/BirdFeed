@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const Navbar = () => {
   return (
     <nav>
@@ -34,9 +35,6 @@ const Navbar = () => {
         <div className="hidden w-full justify-end lg:flex">
           <ul className="text-l ml-auto mr-0 flex items-center font-medium text-gray-100">
             <li>
-              <a href="/" className="mr-4">
-                login
-              </a>
             </li>
             <li>
               <a href="/demo">
