@@ -16,6 +16,7 @@
     "@trpc/client": "^10.45.2",
     "@trpc/server": "^10.45.2",
     "@types/cors": "^2.8.17",
+    "arctic": "^1.9.1",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
