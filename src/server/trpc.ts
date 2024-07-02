@@ -8,7 +8,7 @@ export const router = t.router;
 export const publicProcedure = t.procedure;
 
 export const protectedProceduere = t.procedure.use(function isAuthed(opts) {
-    if (!opts.ctx.session?.user?.id) {
+    if (!opts.ctx.session?.user) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
         });

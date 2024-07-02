@@ -1,6 +1,6 @@
-import { httpBatchLink } from '@trpc/client';
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
-import type { AppRouter } from '@/server/index';
+import type { AppRouter } from '@/server/root';
 function getBaseUrl() {
   if (typeof window !== 'undefined')
     // browser should use relative path
@@ -14,6 +14,7 @@ function getBaseUrl() {
   // assume localhost
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
+
 export const trpc = createTRPCNext<AppRouter>({
   config(opts) {
     return {
@@ -38,4 +39,12 @@ export const trpc = createTRPCNext<AppRouter>({
    * @link https://trpc.io/docs/v11/ssr
    **/
   ssr: false,
+});
+
+export const trpcClient = createTRPCClient<AppRouter>({
+  links: [
+    httpBatchLink({
+      url: `${getBaseUrl()}/api/trpc`,
+    }),
+  ],
 });

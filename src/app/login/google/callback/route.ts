@@ -3,32 +3,38 @@ import { DatabaseUser, db } from "@/app/lib/db";
 import { cookies } from "next/headers";
 import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
-
+import { trpcClient} from "@/app/utils/trpc"
 
 export async function GET(request: Request): Promise<Response> {
 	const url = new URL(request.url);
 	const code = url.searchParams.get("code");
 	const state = url.searchParams.get("state");
-    const codeVerifier = url.searchParams.get("code_verifier")
-	const storedState = cookies().get("google")?.value ?? null;
-	if (!code || !codeVerifier || !state || !storedState || state !== storedState) {
+
+    const storedCodeVerifier = cookies().get("code_verifier")?.value
+	const storedState = cookies().get("state")?.value ?? null;
+	if (!code || !storedCodeVerifier || !storedState || state !== storedState) {
 		return new Response(null, {
 			status: 400
 		});
 	}
 
+	console.log("first work")
+
 	try {
-		const tokens = await google.validateAuthorizationCode(code, codeVerifier);
-		const githubUserResponse = await fetch("https://api.github.com/user", {
+		const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
+		console.log("second work")
+		const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`
 			}
 		});
-		const googleUser: GoogleUser = await githubUserResponse.json();
-		const existingUser = db.prepare("SELECT * FROM user WHERE github_id = ?").get(googleUser.id) as // TODO set up trpc router for this
-			| DatabaseUser
-			| undefined;
 
+		console.log("third work")
+		const googleUser: GoogleUser = await response.json();
+		console.log("googleUser", googleUser)
+
+		const existingUser = await trpcClient.auth.getUser.query({ googleUserId: googleUser.sub }); //sub is just the id (stands for subject, it's just what google calls it)
+		console.log("fourth work")
 		if (existingUser) {
 			const session = await lucia.createSession(existingUser.id, {});
 			const sessionCookie = lucia.createSessionCookie(session.id);
@@ -41,12 +47,27 @@ export async function GET(request: Request): Promise<Response> {
 			});
 		}
 
+		else {
+
+
 		const userId = generateId(15);
-		db.prepare("INSERT INTO user (id, github_id, username) VALUES (?, ?, ?)").run( // TODO set up trpc router for this
-			userId,
-			googleUser.id,
-			googleUser.login
-		);
+		
+		try {
+			const newUser = await trpcClient.auth.addUser.mutate({
+				id: userId,
+				googleUserId: googleUser.sub,
+				email: googleUser.email,
+				name: googleUser.name
+			});
+			console.log("User added successfully:", newUser);
+		} catch (error) {
+			console.error("Error adding user:", error);
+			// Handle error appropriately
+		}
+
+		//TODO: add error checking here
+
+
 		const session = await lucia.createSession(userId, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
@@ -56,9 +77,16 @@ export async function GET(request: Request): Promise<Response> {
 				Location: "/pages/profile"
 			}
 		});
+	 }
+
 	} catch (e) {
-		if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-			// invalid code
+		
+		if (e instanceof OAuth2RequestError) {
+			const { request, message, description } = e;
+			console.log(e.request)
+			console.log(e.message)
+			console.log(e.description)
+			console.log("OAuth error")
 			return new Response(null, {
 				status: 400
 			});
@@ -70,7 +98,9 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 interface GoogleUser {
-	id: string;
+	email: string;
+	name: string;
+	sub: string;
 	login: string;
 }
 
