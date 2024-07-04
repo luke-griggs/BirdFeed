@@ -5,9 +5,9 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 import { Google } from "arctic";
 import { NextApiRequest } from "next";
-
 import type { Session, User } from "lucia";
 import { z } from "zod";
+import cookie from "cookie"
 //set up zod schema
 
 const client = new PrismaClient();
@@ -26,10 +26,16 @@ export const lucia = new Lucia(adapter, {
   },
 });
 
-export const validateRequest = async (): Promise<
+export const validateRequest = async (req: NextApiRequest): Promise<
   { user: User; session: Session } | { user: null; session: null }
 > => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+
+  if (!req || !req.headers){
+    throw new Error("Request object or headers are missing")
+  }
+
+  const Cookies = cookie.parse(req.headers.cookie || "");
+  const sessionId = Cookies[lucia.sessionCookieName];
   if (!sessionId) {
     return {
       user: null,
@@ -57,6 +63,7 @@ export const validateRequest = async (): Promise<
       );
     }
   } catch {}
+  console.log("result", result)
   return result;
 };
 

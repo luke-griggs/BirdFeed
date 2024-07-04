@@ -36,16 +36,22 @@ export async function GET(request: Request): Promise<Response> {
 		const existingUser = await trpcClient.auth.getUser.query({ googleUserId: googleUser.sub }); //sub is just the id (stands for subject, it's just what google calls it)
 		console.log("fourth work")
 		if (existingUser) {
-			const session = await lucia.createSession(existingUser.id, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
-			cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-			return new Response(null, {
-				status: 302,
-				headers: {
-					Location: "/pages/profile"
-				}
-			});
-		}
+			//TODO: make sure session doesn't exist, if it does reroute to profile
+			
+				const session = await lucia.createSession(existingUser.id, {});
+				const sessionCookie = lucia.createSessionCookie(session.id);
+				cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+				return new Response(null, {
+					status: 302,
+					headers: {
+						Location: "/profile/page"
+					}
+				});
+
+			} 
+			
+		
+
 
 		else {
 
@@ -74,7 +80,7 @@ export async function GET(request: Request): Promise<Response> {
 		return new Response(null, {
 			status: 302,
 			headers: {
-				Location: "/pages/profile"
+				Location: "/profile/page"
 			}
 		});
 	 }

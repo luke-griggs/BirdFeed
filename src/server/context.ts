@@ -7,7 +7,7 @@ import { validateRequest } from '@/app/lib/auth';
  * @link https://trpc.io/docs/v11/context
  */
 export async function createContext(opts: CreateNextContextOptions) {
-  const session = await getSession({ req: opts.req });
+  const session = await validateRequest(opts.req);
  
   return {
     session,
