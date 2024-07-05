@@ -37,9 +37,18 @@ export async function GET(request: Request): Promise<Response> {
 		console.log("fourth work")
 		if (existingUser) {
 			//TODO: make sure session doesn't exist, if it does reroute to profile
+				const activeSessionCheck = await lucia.validateSession(existingUser.id);
+				if (activeSessionCheck) {
+					return new Response(null, {
+						status: 302,
+						headers: {
+							Location: "/profile/page"
+						}
+					});
+				}
 			
-				const session = await lucia.createSession(existingUser.id, {});
-				const sessionCookie = lucia.createSessionCookie(session.id);
+				const newSession = await lucia.createSession(existingUser.id, {});
+				const sessionCookie = lucia.createSessionCookie(newSession.id);
 				cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 				return new Response(null, {
 					status: 302,

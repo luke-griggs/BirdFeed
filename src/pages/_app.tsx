@@ -1,12 +1,12 @@
 import type { AppProps } from 'next/app';
 import { trpc } from '@/app/utils/trpc';
 import RootLayout from '@/app/layout'; 
+import { AppType } from 'next/app'
+import "../app/globals.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
+const MyApp: AppType = ({ Component, pageProps }: AppProps) => {
   return (
-    <RootLayout>
       <Component {...pageProps} />
-    </RootLayout>
   );
 }
 
