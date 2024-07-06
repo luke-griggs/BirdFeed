@@ -1,3 +1,5 @@
+"use client"
+
 import React, { ChangeEvent, useState } from "react";
 
 // Define a functional component named UploadAndDisplayImage

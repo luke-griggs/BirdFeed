@@ -4,7 +4,7 @@ import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { Google } from "arctic";
-import { NextApiRequest } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import type { Session, User } from "lucia";
 import { z } from "zod";
 import cookie from "cookie"
@@ -67,25 +67,32 @@ export const validateRequest = async (req: NextApiRequest): Promise<
   return result;
 };
 
-export async function getSession(
-  req: NextApiRequest
-): Promise<{ user: User; session: Session } | null> {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+
+//validate request but doesn't refresh the cookie
+export const getSession = async (req: NextApiRequest): Promise<
+  { user: User; session: Session } | { user: null; session: null }
+> => {
+
+  if (!req || !req.headers){
+    throw new Error("Request object or headers are missing")
+  }
+
+  const Cookies = cookie.parse(req.headers.cookie || "");
+  const sessionId = Cookies[lucia.sessionCookieName];
   if (!sessionId) {
-    return null;
+    return {
+      user: null,
+      session: null,
+    };
   }
 
-  try {
-    const result = await lucia.validateSession(sessionId);
-    if (result && result.session && result.session.fresh) {
-      return { user: result.user, session: result.session };
-    }
-  } catch (error) {
-    console.error("Error validating session:", error);
-  }
+  const result = await lucia.validateSession(sessionId);
+  
+  console.log("result", result)
+  return result;
+};
 
-  return null;
-}
+
 
 // IMPORTANT!
 declare module "lucia" {
