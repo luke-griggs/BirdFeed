@@ -37,8 +37,15 @@ const Navbar = () => {
             <li>
             </li>
             <li>
-              <a href="/demo">
+              <a href="/login">
                 <div className="bg-amber-300 hover:bg-amber-400 rounded-[95px] px-3 py-2 text-sm">
+                  sign in
+                </div>
+              </a>
+            </li>
+            <li>
+              <a href="/login">
+                <div className="rounded-[95px] px-3 py-2 text-sm">
                   sign up
                 </div>
               </a>

@@ -74,6 +74,12 @@ export const AuthRouter = router({
         message: "No active session to logout from.",
       });
     }
+
+    await db.session.delete({
+        where:{
+            userId: ctx.session.user.id
+        }
+    })
     // Perform the logout logic, e.g., invalidate the session token
     await lucia.invalidateSession(ctx.session.user.id); // This function should handle session token invalidation
 
@@ -85,6 +91,8 @@ export const AuthRouter = router({
         maxAge: -1, // Set maxAge to -1 to instruct the browser to delete the cookie
       })
     );
+
+    
 
     return { success: true, message: "Logged out successfully" };
   }),

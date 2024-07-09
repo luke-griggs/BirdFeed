@@ -8,10 +8,10 @@ import { trpc } from "@/app/utils/trpc";
 import { LogoutButton } from "@/app/lib/helpers/logout";
 
 export default function Page() {
-  const session = trpc.auth.readUserSession.useQuery();
-  if (!session) {
-    redirect("/login");
-  }
+  // const session = trpc.auth.readUserSession.useQuery();
+  // if (!session) {
+  //   redirect("/login");
+  // }
 
   return (
     <div>

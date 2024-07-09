@@ -18,7 +18,7 @@ export async function GET(request: Request): Promise<Response> {
 		});
 	}
 
-	console.log("first work")
+	
 
 	try {
 		const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
@@ -29,7 +29,6 @@ export async function GET(request: Request): Promise<Response> {
 			}
 		});
 
-		console.log("third work")
 		const googleUser: GoogleUser = await response.json();
 		console.log("googleUser", googleUser)
 
@@ -38,7 +37,9 @@ export async function GET(request: Request): Promise<Response> {
 		if (existingUser) {
 			//TODO: make sure session doesn't exist, if it does reroute to profile
 				const activeSessionCheck = await lucia.validateSession(existingUser.id);
-				if (activeSessionCheck) {
+
+				if (activeSessionCheck.session) {
+					console.log("session found")
 					return new Response(null, {
 						status: 302,
 						headers: {
@@ -46,10 +47,13 @@ export async function GET(request: Request): Promise<Response> {
 						}
 					});
 				}
-			
+				
+				console.log("session not found, creating new session and rerouting to profile page")
 				const newSession = await lucia.createSession(existingUser.id, {});
+				console.log("session created")
 				const sessionCookie = lucia.createSessionCookie(newSession.id);
 				cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+				console.log("cookie set")
 				return new Response(null, {
 					status: 302,
 					headers: {
@@ -58,23 +62,19 @@ export async function GET(request: Request): Promise<Response> {
 				});
 
 			} 
-			
-		
-
-
 		else {
-
 
 		const userId = generateId(15);
 		
 		try {
+			
 			const newUser = await trpcClient.auth.addUser.mutate({
 				id: userId,
 				googleUserId: googleUser.sub,
 				email: googleUser.email,
 				name: googleUser.name
 			});
-			console.log("User added successfully:", newUser);
+			console.log("User added successfully");
 		} catch (error) {
 			console.error("Error adding user:", error);
 			// Handle error appropriately
@@ -82,7 +82,7 @@ export async function GET(request: Request): Promise<Response> {
 
 		//TODO: add error checking here
 
-
+		console.log("creating session for brand new user")
 		const session = await lucia.createSession(userId, {});
 		const sessionCookie = lucia.createSessionCookie(session.id);
 		cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
