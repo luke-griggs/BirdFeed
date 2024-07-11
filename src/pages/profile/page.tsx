@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { NextApiRequest } from "next";
 import { trpc } from "@/app/utils/trpc";
 import { LogoutButton } from "@/app/lib/helpers/logout";
+import UploadAndDisplayImage from "@/app/components/image-upload";
 
 export default function Page() {
   // const session = trpc.auth.readUserSession.useQuery();
@@ -15,8 +16,13 @@ export default function Page() {
 
   return (
     <div>
-      <div>Hi, welcome to your birdfeed profile</div>
-      <LogoutButton />
+      <div className="flex w-full gap-6">
+        <div className="pb-4">Hi, welcome to your birdfeed profile</div>
+        <div>
+          <LogoutButton />
+        </div>
+      </div>
+      <UploadAndDisplayImage />
     </div>
   );
 

@@ -16,7 +16,7 @@ export function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout}>Logout</button>
+    <button onClick={handleLogout} className="bg-green-400 rounded-2xl w-full h-auto">Logout</button>
   )
 
 }
