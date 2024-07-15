@@ -24,6 +24,7 @@ export const AuthRouter = router({
           },
         });
 
+        console.log("this is the user: ", {user})
         return user ?? null; // Ensure a null is returned if no user is found
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -92,8 +93,32 @@ export const AuthRouter = router({
       })
     );
 
-    
-
     return { success: true, message: "Logged out successfully" };
   }),
+
+  verifySession: publicProcedure
+  .input(
+    z.object({
+        userId: z.string()
+    })
+  )
+  .query(async({input}) => {
+    try{
+        const session = db.session.findFirst({
+            where: {
+                userId: input.userId
+            }
+        })
+        console.log("session", session)
+        return session ?? null
+    }
+    catch (error) {
+        console.error(error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to process the request",
+        });
+      }
+
+  })
 });

@@ -4,7 +4,6 @@ import Navbar from "./components/navbar";
 import { motion } from "framer-motion";
 import React from "react";
 import ImagesSliderParent from "./components/images-slider-parent";
-import UploadAndDisplayImage from "./components/image-upload";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
@@ -18,7 +17,7 @@ export default function Home() {
             <h1 className="text-4xl font-bold">Identify Birds in seconds</h1>
             <p className="text-lg">
               Identify and learn about the birds you spot in the wild with
-              Birdfeed's simple AI-powered bird identification tool
+              Birdfeeds simple AI-powered bird identification tool
             </p>
             <button className="bg-[#156E93] text-white px-4 py-2 rounded-full">
               identify now!
@@ -33,7 +32,6 @@ export default function Home() {
               </div>
             </div>
             <p>234,556 users feeding birds with Bird Buddy</p>
-            <UploadAndDisplayImage />
           </div>
           <div className="md:w-1/2 flex justify-center relative mt-8 md:mt-0">
             <ImagesSliderParent />

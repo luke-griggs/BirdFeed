@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion";
-import { ImagesSlider } from "../components/images-slider";
+import { ImagesSlider } from "./images-slider";
 
 import React from "react";
 

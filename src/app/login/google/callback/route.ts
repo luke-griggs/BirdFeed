@@ -3,7 +3,7 @@ import { DatabaseUser, db } from "@/app/lib/db";
 import { cookies } from "next/headers";
 import { OAuth2RequestError } from "arctic";
 import { generateId } from "lucia";
-import { trpcClient} from "@/app/utils/trpc"
+import { trpc, trpcClient} from "@/app/utils/trpc"
 
 export async function GET(request: Request): Promise<Response> {
 	const url = new URL(request.url);
@@ -36,9 +36,9 @@ export async function GET(request: Request): Promise<Response> {
 		console.log("fourth work")
 		if (existingUser) {
 			//TODO: make sure session doesn't exist, if it does reroute to profile
-				const activeSessionCheck = await lucia.validateSession(existingUser.id);
+				const activeSessionCheck = await trpcClient.auth.verifySession.query({userId: existingUser.id});
 
-				if (activeSessionCheck.session) {
+				if (activeSessionCheck) {
 					console.log("session found")
 					return new Response(null, {
 						status: 302,
