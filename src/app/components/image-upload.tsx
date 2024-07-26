@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import React, { ChangeEvent, useRef, useState } from 'react';
-import { trpc } from '@/app/utils/trpc';
+import React, { ChangeEvent, useRef, useState } from "react";
+import { trpc } from "@/app/utils/trpc";
 
 // Define the component
 const UploadAndDisplayImage = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Proper placement of useMutation inside the component
   const createPresignedUrlMutation = trpc.bird.createPresignedUrl.useMutation();
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
       setSelectedImage(file);
@@ -21,7 +21,7 @@ const UploadAndDisplayImage = () => {
   const handleRemoveImage = () => {
     setSelectedImage(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = ''; // Clear the file input
+      fileInputRef.current.value = ""; // Clear the file input
     }
   };
 
@@ -36,29 +36,39 @@ const UploadAndDisplayImage = () => {
     selectedImage: File;
   }) {
     const { url, fields } = await getPresignedUrl();
+    console.log("Presigned URL:", url);
+    console.log("Presigned fields:", fields);
+  
     const formData = new FormData();
-    for (const [key, value] of Object.entries(fields)) {
-      formData.append(key, value);
+
+    for (const name in fields){
+      formData.append(name, fields[name]);
     }
-    formData.append('file', selectedImage); // Correctly append the file
+    
+    formData.append("file", selectedImage, selectedImage.name);
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       body: formData,
-    });
+    }); 
+
+    
     return response;
   }
 
   const handleUploadImage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedImage) return;
+
+    console.log("Selected image:", selectedImage);
+
     const res = await uploadFileToS3({
       getPresignedUrl: () => createPresignedUrlMutation.mutateAsync(),
       selectedImage,
     });
     setSelectedImage(null); // Clear the selected image after uploading
 
-    console.log('Upload response:', res);
+    console.log("Upload response:", res);
   };
 
   return (
@@ -69,9 +79,12 @@ const UploadAndDisplayImage = () => {
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          style={{ display: 'none' }}
+          style={{ display: "none" }}
         />
-        <label htmlFor="file-upload" className="custom-file-upload cursor-pointer text-blue-500">
+        <label
+          htmlFor="file-upload"
+          className="custom-file-upload cursor-pointer text-blue-500"
+        >
           Upload Bird
         </label>
         {selectedImage && (
@@ -90,7 +103,10 @@ const UploadAndDisplayImage = () => {
               >
                 Remove
               </button>
-              <button type="submit" className="bg-green-500 text-white p-2 rounded">
+              <button
+                type="submit"
+                className="bg-green-500 text-white p-2 rounded"
+              >
                 Analyze Image
               </button>
             </div>

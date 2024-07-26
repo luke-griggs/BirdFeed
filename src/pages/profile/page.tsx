@@ -8,18 +8,30 @@ import { trpc } from "@/app/utils/trpc";
 import { LogoutButton } from "@/app/lib/helpers/logout";
 import UploadAndDisplayImage from "@/app/components/image-upload";
 
+
 export default function Page() {
   // const session = trpc.auth.readUserSession.useQuery();
   // if (!session) {
   //   redirect("/login");
   // }
+  const birdDescription = trpc.bird.birdDescription.useMutation();
 
+
+  const handleClick = async () => {
+    await birdDescription.mutateAsync();
+  };
+  
   return (
-    <div>
       <div className="flex w-full gap-6">
         <div className="pb-4">Hi, welcome to your birdfeed profile</div>
         <div>
           <LogoutButton />
+        </div>
+
+        <div>
+          <button onClick={handleClick}>Get bird description</button> 
+        <div>
+          
         </div>
       </div>
       <UploadAndDisplayImage />
