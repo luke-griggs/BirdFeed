@@ -3,13 +3,13 @@
 import React, { ChangeEvent, useRef, useState } from "react";
 import { trpc } from "@/app/utils/trpc";
 
-// Define the component
 const UploadAndDisplayImage = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Proper placement of useMutation inside the component
   const createPresignedUrlMutation = trpc.bird.createPresignedUrl.useMutation();
+  const birdDescription = trpc.bird.birdDescription.useMutation();
+
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -52,7 +52,8 @@ const UploadAndDisplayImage = () => {
       body: formData,
     }); 
 
-    
+    const res = await birdDescription.mutateAsync({image_url: `${url}/${fields.key}`}); // implement logic to display this
+
     return response;
   }
 
@@ -107,7 +108,7 @@ const UploadAndDisplayImage = () => {
                 type="submit"
                 className="bg-green-500 text-white p-2 rounded"
               >
-                Analyze Image
+                What bird am I?
               </button>
             </div>
           </div>

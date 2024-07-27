@@ -17,10 +17,6 @@ export default function Page() {
   const birdDescription = trpc.bird.birdDescription.useMutation();
 
 
-  const handleClick = async () => {
-    await birdDescription.mutateAsync();
-  };
-  
   return (
       <div className="flex w-full gap-6">
         <div className="pb-4">Hi, welcome to your birdfeed profile</div>
@@ -29,7 +25,6 @@ export default function Page() {
         </div>
 
         <div>
-          <button onClick={handleClick}>Get bird description</button> 
         <div>
           
         </div>

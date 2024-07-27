@@ -40,9 +40,21 @@ export const BirdRouter = router({
     }),
     
     birdDescription: protectedProcedure
-    .mutation(async ({ctx}) => {
-        getbirdDescription()
+    .input(z.object({
+        image_url: z.string()
+    }))
+    .mutation(async ({input}) => {
+        const jsonData = await getbirdDescription(input.image_url)
         
+        return jsonData
+        
+    }),
+
+    addBirdToNest: protectedProcedure //placeholder for now, need to use after getting the bird description
+    .input(z.object({
+        image_url: z.string()
+    }))
+    .mutation(async ({ctx, input}) => {
         return 
     }),
 
