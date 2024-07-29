@@ -1,15 +1,25 @@
 "use client";
 
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef, useState, useEffect } from "react";
 import { trpc } from "@/app/utils/trpc";
+import BirdCard from "./bird-card";
+
 
 const UploadAndDisplayImage = () => {
+  interface BirdCardData {
+    info: {
+      name: string;
+      description: string;
+    }
+    image_url: string;
+  }
+
+  const [birdCardData, setBirdCardData] = useState<BirdCardData>();
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createPresignedUrlMutation = trpc.bird.createPresignedUrl.useMutation();
   const birdDescription = trpc.bird.birdDescription.useMutation();
-
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
@@ -36,40 +46,42 @@ const UploadAndDisplayImage = () => {
     selectedImage: File;
   }) {
     const { url, fields } = await getPresignedUrl();
-    console.log("Presigned URL:", url);
-    console.log("Presigned fields:", fields);
-  
     const formData = new FormData();
 
-    for (const name in fields){
+    for (const name in fields) {
       formData.append(name, fields[name]);
     }
-    
+
     formData.append("file", selectedImage, selectedImage.name);
 
-    const response = await fetch(url, {
+    const AwsResponse = await fetch(url, {
       method: "POST",
       body: formData,
+    });
+
+    const birdNameAndDescription = await birdDescription.mutateAsync({
+      image_url: `${url}/${fields.key}`,
     }); 
 
-    const res = await birdDescription.mutateAsync({image_url: `${url}/${fields.key}`}); // implement logic to display this
-
-    return response;
+    return { AwsResponse, birdNameAndDescription, url:`${url}/${fields.key}` };
   }
 
   const handleUploadImage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedImage) return;
 
-    console.log("Selected image:", selectedImage);
-
     const res = await uploadFileToS3({
       getPresignedUrl: () => createPresignedUrlMutation.mutateAsync(),
       selectedImage,
     });
-    setSelectedImage(null); // Clear the selected image after uploading
 
-    console.log("Upload response:", res);
+    setSelectedImage(null); // Clear the selected image after uploading
+    setBirdCardData({
+      info: res.birdNameAndDescription,
+      image_url: res.url
+  });
+
+    console.log("Upload response:", res.AwsResponse);
   };
 
   return (
@@ -114,6 +126,15 @@ const UploadAndDisplayImage = () => {
           </div>
         )}
       </form>
+      {birdCardData && (
+        <BirdCard
+        image_url={birdCardData?.image_url}
+        birdName={birdCardData?.info.name}
+        birdDescription={birdCardData?.info.description}
+      />
+        
+      )}
+      
     </div>
   );
 };

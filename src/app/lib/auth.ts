@@ -88,7 +88,6 @@ export const getSession = async (req: NextApiRequest): Promise<
 
   const result = await lucia.validateSession(sessionId);
   
-  console.log("result", result)
   return result;
 };
 
