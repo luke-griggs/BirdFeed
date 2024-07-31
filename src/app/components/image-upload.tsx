@@ -4,6 +4,10 @@ import React, { ChangeEvent, useRef, useState, useEffect } from "react";
 import { trpc } from "@/app/utils/trpc";
 import BirdCard from "./bird-card";
 import toast, { Toaster } from "react-hot-toast";
+import { resizeImage } from "../api/image_resizer";
+import Dialog from "@/app/components/ui/dialog";
+import { HiX } from "react-icons/hi";
+
 
 
 const UploadAndDisplayImage = () => {
@@ -16,18 +20,37 @@ const UploadAndDisplayImage = () => {
   }
 
   const [birdCardData, setBirdCardData] = useState<BirdCardData>();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<Blob | File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const createPresignedUrlMutation = trpc.bird.createPresignedUrl.useMutation();
   const birdDescription = trpc.bird.birdDescription.useMutation();
+  const addBirdToNest = trpc.bird.addBirdToNest.useMutation();
+
  
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+
+
     const file = event.target.files && event.target.files[0];
-    if (file) {
-      setSelectedImage(file);
+    if (file){
+      resizeImage(file, 768, 2000, (resizedBlob) => {
+        setSelectedImage(resizedBlob);
+      })
     }
+
   };
+
+  const handleAddToNest = async () => {
+    
+    const res = await addBirdToNest.mutateAsync({ image_url: birdCardData!.image_url, name: birdCardData!.info.name, description: birdCardData!.info.description });
+
+    if (res.success) {
+      toast.success("Bird added to your nest");
+    } else {
+      toast.error("Failed to add bird to your nest");
+    }
+    
+  }
 
   const handleRemoveImage = () => {
     setSelectedImage(null);
@@ -44,7 +67,7 @@ const UploadAndDisplayImage = () => {
       url: string;
       fields: Record<string, string>;
     }>;
-    selectedImage: File;
+    selectedImage: Blob | File;
   }) {
     const { url, fields } = await getPresignedUrl();
     const formData = new FormData();
@@ -53,7 +76,7 @@ const UploadAndDisplayImage = () => {
       formData.append(name, fields[name]);
     }
 
-    formData.append("file", selectedImage, selectedImage.name);
+    formData.append("file", selectedImage);
 
     const AwsResponse = await fetch(url, {
       method: "POST",
@@ -128,11 +151,32 @@ const UploadAndDisplayImage = () => {
         )}
       </form>
       {birdCardData && (
-        <BirdCard
-        image_url={birdCardData?.image_url}
-        birdName={birdCardData?.info.name}
-        birdDescription={birdCardData?.info.description}
-      />
+        <Dialog>
+        <div className="w-1/2">
+          <div>
+            <img src={birdCardData.image_url} alt="" />
+            <h1 className="text-2xl font-medium pb-4">
+              congratulations! you spotted a {birdCardData.info.name}
+            </h1>
+            <p className="text-sm text-gray-300">{birdCardData.info.description}</p>
+          </div>
+        </div>
+        <div className="flex-row space-x-3">
+          <button className="w-sm bg-blue-500 text-white rounded-md" onClick={() => {handleAddToNest(), setBirdCardData(undefined)}}> {/* need to close and toast after this */}
+          <h1 className="p-2">
+            Add to my Nest
+            </h1>        
+            </button>
+          <button className="w-sm border-2 border-blue-500 rounded-md">
+            <h1 className="p-1.5">
+            Scan another bird {/* need to setBirdCardData to undefined and toast after this */}
+            </h1>
+          </button>
+          <button className="absolute right-4 top-4" onClick={() => setBirdCardData(undefined)}>
+            <HiX className="h-4 w-4" />
+          </button>
+        </div>
+      </Dialog>
         
       )}
       <Toaster />

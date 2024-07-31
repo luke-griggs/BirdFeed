@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { trpc } from "@/app/utils/trpc";
 import { useRouter } from 'next/router';
@@ -16,7 +17,7 @@ export function LogoutButton() {
   };
 
   return (
-    <button onClick={handleLogout} className="bg-green-400 rounded-2xl w-full h-auto">Logout</button>
+    <button onClick={handleLogout} className="bg-green-400 rounded-md w-full h-auto">Logout</button>
   )
 
 }

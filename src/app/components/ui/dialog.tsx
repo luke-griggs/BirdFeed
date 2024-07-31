@@ -24,10 +24,7 @@ const Dialog: React.FC<DialogProps> = ({ children }) => {
           className="fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-white p-6 shadow-lg rounded-lg"
         >
           {children}
-          <DialogPrimitive.Close className="absolute right-4 top-4" onClick={closeDialog}> {/* pass this down to bird-card maybe */}
-            <HiX className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+          
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>
