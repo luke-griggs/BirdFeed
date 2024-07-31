@@ -1,6 +1,7 @@
 import React from "react";
 import Dialog from "@/app/components/ui/dialog";
 import { trpc } from "../utils/trpc";
+import toast from "react-hot-toast";
 
 const BirdCard = ({
   birdName,
@@ -14,12 +15,16 @@ const BirdCard = ({
 
   const addBirdToNest = trpc.bird.addBirdToNest.useMutation();
 
-  const handleClick = async (image_url: string) => {
-    try {
-      await addBirdToNest.mutateAsync({ image_url });
-    } catch (error) {
-      console.error("Failed to add bird to nest", error);
+  const handleClick = async () => {
+    
+    const res = await addBirdToNest.mutateAsync({ image_url: image_url, name: birdName, description: birdDescription });
+
+    if (res.success) {
+      toast.success("Bird added to your nest");
+    } else {
+      toast.error("Failed to add bird to your nest");
     }
+    
   }
 
   return (
@@ -34,7 +39,7 @@ const BirdCard = ({
         </div>
       </div>
       <div className="flex-row space-x-3">
-        <button className="w-sm bg-blue-500 text-white rounded-md" onClick={() => handleClick(image_url)}> {/* need to close and toast after this */}
+        <button className="w-sm bg-blue-500 text-white rounded-md" onClick={() => handleClick()}> {/* need to close and toast after this */}
         <h1 className="p-2">
           Add to my Nest
           </h1>        

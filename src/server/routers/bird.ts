@@ -55,20 +55,34 @@ export const BirdRouter = router({
   addBirdToNest: protectedProcedure //placeholder for now, need to use after getting the bird description
     .input(
       z.object({
+        name: z.string(),
+        description: z.string(),
         image_url: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      await db.user.update({
-        where: {
-          id: ctx.session?.user.id,
-        },
+      const addBird = await db.birds.create({
         data: {
-          birdImageUrls: {
-            push: input.image_url,
-          },
-        },
+          name: input.name,
+          description: input.description,
+          imageUrl: input.image_url,
+          userId: ctx.session?.user.id
+        }
       });
-      //return success or failure
+      if (addBird){
+        return { success: true }
+      }
+      else {
+        return { success: false }
+      }
+    }),
+    getUserBirds: protectedProcedure.query(async ({ ctx }) => {
+        const birds = await db.birds.findMany({
+          where: {
+            userId: ctx.session?.user.id
+          }
+        })
+        return birds
+
     }),
 });

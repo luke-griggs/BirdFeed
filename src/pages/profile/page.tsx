@@ -8,28 +8,20 @@ import { trpc } from "@/app/utils/trpc";
 import { LogoutButton } from "@/app/lib/helpers/logout";
 import UploadAndDisplayImage from "@/app/components/image-upload";
 
-
+//secure this page
 export default function Page() {
-  // const session = trpc.auth.readUserSession.useQuery();
-  // if (!session) {
-  //   redirect("/login");
-  // }
-  const birdDescription = trpc.bird.birdDescription.useMutation();
-
 
   return (
-      <div className="flex w-full gap-6">
-        <div className="pb-4">Hi, welcome to your birdfeed profile</div>
-        <div>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6">
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-semibold text-gray-800">Welcome to Your Birdfeed Profile</h1>
           <LogoutButton />
         </div>
-
-        <div>
-        <div>
-          
+        <div className="bg-blue-50 p-4 rounded-lg mb-4">
+          <UploadAndDisplayImage />
         </div>
       </div>
-      <UploadAndDisplayImage />
     </div>
   );
 

@@ -3,6 +3,7 @@
 import React, { ChangeEvent, useRef, useState, useEffect } from "react";
 import { trpc } from "@/app/utils/trpc";
 import BirdCard from "./bird-card";
+import toast, { Toaster } from "react-hot-toast";
 
 
 const UploadAndDisplayImage = () => {
@@ -20,7 +21,7 @@ const UploadAndDisplayImage = () => {
 
   const createPresignedUrlMutation = trpc.bird.createPresignedUrl.useMutation();
   const birdDescription = trpc.bird.birdDescription.useMutation();
-
+ 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files && event.target.files[0];
     if (file) {
@@ -134,7 +135,7 @@ const UploadAndDisplayImage = () => {
       />
         
       )}
-      
+      <Toaster />
     </div>
   );
 };
