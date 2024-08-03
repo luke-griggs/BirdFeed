@@ -1,16 +1,17 @@
 
 import Image from "next/image";
-import Navbar from "./components/navbar";
+import Navbar from "../app/components/navbar";
 import { motion } from "framer-motion";
 import React from "react";
-import ImagesSliderParent from "./components/images-slider-parent";
-import { useSession, signIn, signOut } from "next-auth/react";
+import ImagesSliderParent from "../app/components/images-slider-parent";
+import { trpc } from "../app/utils/trpc";
 
-export default function Home() {
-  
+
+const Home = () => {
+  const {data: session} = trpc.auth.readUserSession.useQuery();
   return (
     <main>
-      <Navbar />
+      <Navbar session={session?.user}/>
       <div className="bg-[#FFF5E5] min-h-screen">
         <main className="flex flex-col md:flex-row items-center p-8">
           <div className="md:w-1/2 text-[#156E93] space-y-4 p-10">
@@ -41,3 +42,4 @@ export default function Home() {
     </main>
   );
 }
+export default Home

@@ -8,8 +8,6 @@ import { resizeImage } from "../api/image_resizer";
 import Dialog from "@/app/components/ui/dialog";
 import { HiX } from "react-icons/hi";
 
-
-
 const UploadAndDisplayImage = () => {
   interface BirdCardData {
     info: {
@@ -30,6 +28,7 @@ const UploadAndDisplayImage = () => {
  
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
 
+    setBirdCardData(undefined);
 
     const file = event.target.files && event.target.files[0];
     if (file){
@@ -167,11 +166,21 @@ const UploadAndDisplayImage = () => {
             Add to my Nest
             </h1>        
             </button>
-          <button className="w-sm border-2 border-blue-500 rounded-md">
-            <h1 className="p-1.5">
-            Scan another bird {/* need to setBirdCardData to undefined and toast after this */}
-            </h1>
-          </button>
+
+            <input
+          id="file-upload"
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: "none" }}
+        />
+            <label
+          htmlFor="file-upload"
+          className="custom-file-upload cursor-pointer p-1.5"
+          // onClick={() => setBirdCardData(undefined)}
+        >
+          Scan another bird
+        </label>
           <button className="absolute right-4 top-4" onClick={() => setBirdCardData(undefined)}>
             <HiX className="h-4 w-4" />
           </button>

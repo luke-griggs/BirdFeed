@@ -7,6 +7,7 @@ import { TRPCError } from "@trpc/server";
 import { getSession } from "@/app/lib/auth";
 import { lucia } from "@/app/lib/auth";
 import cookie from "cookie";
+import { redirect } from "next/navigation";
 
 export const AuthRouter = router({
   getUser: publicProcedure
@@ -63,6 +64,7 @@ export const AuthRouter = router({
         code: "UNAUTHORIZED",
         message: "No active session found",
       });
+     
     }
     return session;
   }),
@@ -82,7 +84,16 @@ export const AuthRouter = router({
         }
     })
     // Perform the logout logic, e.g., invalidate the session token
-    await lucia.invalidateSession(ctx.session.user.id); // This function should handle session token invalidation
+    try {
+      await lucia.invalidateSession(ctx.session.user.id);
+    }catch (error) {
+      console.error("Failed to invalidate session:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to process the request",
+      });
+    }
+    // await lucia.invalidateSession(ctx.session.user.id); // This function should handle session token invalidation
 
     const sessionCookie = lucia.createBlankSessionCookie();
     ctx.res.setHeader(
@@ -92,8 +103,9 @@ export const AuthRouter = router({
         maxAge: -1, // Set maxAge to -1 to instruct the browser to delete the cookie
       })
     );
-
+    
     return { success: true, message: "Logged out successfully" };
+    
   }),
 
   verifySession: publicProcedure

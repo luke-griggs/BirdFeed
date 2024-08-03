@@ -1,12 +1,16 @@
+"use client"
 
 import React from 'react';
 import { trpc } from "@/app/utils/trpc";
+import { Redirect } from 'next';
+import { redirect } from 'next/navigation';
 import { useRouter } from 'next/router';
 
-export function LogoutButton() {
+export const SignOut = async () => {
   const logout = trpc.auth.logout.useMutation();
-  const router = useRouter();
 
+  const router = useRouter();
+  
   const handleLogout = async () => {
     try {
       await logout.mutateAsync();
@@ -16,8 +20,10 @@ export function LogoutButton() {
     }
   };
 
-  return (
-    <button onClick={handleLogout} className="bg-green-400 rounded-md w-full h-auto">Logout</button>
-  )
 
-}
+  return (
+    <button onClick={handleLogout}>
+      Logout
+    </button>
+  );
+};
