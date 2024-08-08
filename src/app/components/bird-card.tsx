@@ -12,6 +12,7 @@ const BirdCard = ({
   birdDescription: string;
   image_url: string;
 }) => {
+  const vowels = ["A", "E", "I", "O", "U", "A", "E", "I", "O", "U"];
 
   const addBirdToNest = trpc.bird.addBirdToNest.useMutation();
 
@@ -33,7 +34,7 @@ const BirdCard = ({
         <div>
           <img src={image_url} alt="" />
           <h1 className="text-2xl font-medium pb-4">
-            congratulations! you spotted a {birdName}
+            {`congratulations! you spotted ${vowels.includes(birdName[0]) ? "an" : "a"} ${birdName}`}
           </h1>
           <p className="text-sm text-gray-300">{birdDescription}</p>
         </div>

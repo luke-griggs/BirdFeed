@@ -1,6 +1,8 @@
 "use client"
 
 import React from "react";
+import { cn } from "@/app/utils/cn";
+import { BentoGrid, BentoGridItem } from "./ui/bento-grid";
 import { trpc } from "@/app/utils/trpc";
 
 const UserBirds = () => {
@@ -17,13 +19,16 @@ const UserBirds = () => {
   return (
     <div>
       {birds && birds.length > 0 ? (
-        birds.map((bird) => (
-          <div key={bird.id} className="bg-green-500 p-4 mb-4 rounded-lg">
-            <img src={bird.imageUrl} alt={`Image of ${bird.name}`} className="w-sm h-auto mb-2 rounded" />
-            <div className="text-lg font-semibold">{bird.name}</div>
-            <div className="text-sm text-gray-700">{bird.description}</div>
-          </div>
-        ))
+        <BentoGrid>
+          {birds.map((bird) => (
+            <BentoGridItem
+              key={bird.id}
+              title={bird.name}
+              description={bird.description}
+              image={bird.imageUrl}
+            />
+          ))}
+        </BentoGrid>
       ) : (
         <div>Add some birds to your nest to get started</div>
       )}

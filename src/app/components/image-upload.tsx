@@ -17,6 +17,8 @@ const UploadAndDisplayImage = () => {
     image_url: string;
   }
 
+  const vowels = ["A", "E", "I", "O", "U", "A", "E", "I", "O", "U"];
+
   const [birdCardData, setBirdCardData] = useState<BirdCardData>();
   const [selectedImage, setSelectedImage] = useState<Blob | File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -155,9 +157,10 @@ const UploadAndDisplayImage = () => {
           <div>
             <img src={birdCardData.image_url} alt="" />
             <h1 className="text-2xl font-medium pb-4">
-              congratulations! you spotted a {birdCardData.info.name}
+              {`congratulations! you spotted ${vowels.includes(birdCardData.info.name[0]) ? "an" : "a"} ${birdCardData.info.name}`}
+
             </h1>
-            <p className="text-sm text-gray-300">{birdCardData.info.description}</p>
+            <p className="text-sm text-gray-400">{birdCardData.info.description}</p>
           </div>
         </div>
         <div className="flex-row space-x-3">
